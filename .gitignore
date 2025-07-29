@@ -22,3 +22,14 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+/out/production/library-management-app/entities/Admin.class
+/out/production/library-management-app/entities/Book.class
+/out/production/library-management-app/entities/Borrowable.class
+/out/production/library-management-app/storage/config.properties
+/out/production/library-management-app/Main.class
+/out/production/library-management-app/META-INF/MANIFEST.MF
+/out/production/library-management-app/entities/RegularUser.class
+/out/production/library-management-app/entities/Role.class
+/out/production/library-management-app/storage/SearchService.class
+/out/production/library-management-app/storage/StorageManager.class
+/out/production/library-management-app/entities/User.class
