@@ -1,90 +1,79 @@
-# 📚 Library Management Console App
+# Library Management Console App
 
-A simple Java console application for managing a library system with support for user roles, borrowing books, and persistent MySQL database storage.
+A console-based Java application for managing a library system, containerized using Docker, MySQL, and Adminer.
 
----
+## Features
 
-## ✅ Features
-
-### 👤 User Roles
-- **Admin**
-    - Add, edit, or delete books
-    - Register users (Admin or Regular)
-- **Regular User**
-    - View books
-    - Borrow and return books
-
-### 💾 Data Persistence
-- Data is stored in a MySQL database
-- Borrowed books are tracked per user
-
-### 📦 OOP + Java Collections
-- `Book`, `User`, `Admin`, `RegularUser` entities
-- `List`, `Map`, `Set` usage
-- Reusable generic search functions
+- Console-based interactive app
+- MySQL-backed storage
+- Adminer for web-based DB browsing
+- Configurable via `.env` file
+- Containerized with Docker Compose
 
 ---
 
-## 🚀 How to Run the App
+## Prerequisites
 
-### 🔧 Prerequisites
-- Java 19 or higher
-- MySQL server installed and running
-
-### 🛠️ Step-by-Step Setup
-
-1. 🗄️ Create Database Schema
-
-   Run the schema SQL script:
-
-   mysql -u root -p < db_schema.sql
-
-2. ⚙️ Configure DB Connection
-
-   Open `src/storage/config.properties` and set the following:
-
-   url=jdbc:mysql://localhost:3306/library_db
-   username=root
-   password=your_password
-
-   Make sure the MySQL service is running.
-
-3. (Optional) Load Sample Data
-
-   You can optionally populate the database with test data:
-
-   mysql -u root -p library_db < sample_data.sql
-
-4. ▶️ Run the App
-
-   Compile and run the app from your IDE or terminal:
-
-   javac -d out src/**/*.java
-   java -cp out LibraryApp
+- Docker
+- Docker Compose
 
 ---
 
-## 📂 Sample User Flow
+## How to Build and Run
+Start all services:
 
-- Launch app
-- Login as `admin` or `regular`
-- Admins can manage books and users
-- Regular users can borrow and return available books
+```bash
+docker-compose up --build -d
+```
 
----
-
-## 🧱 Built With
-
-- Java (OOP, JDBC, Console I/O)
-- MySQL
-- JDBC
-- Collections & Generics
+This will start:
+- `db`: MySQL server (with optional init scripts)
+- `library-app`: The Java console app (interactive)
+- `adminer`: Web interface for DB management
 
 ---
 
-## 📌 Notes
+## How to Use the App (Terminal Access)
 
-- Each book must have a unique title to allow easy lookup.
-- Borrowing is only allowed if `available_copies > 0`.
-- Returning increases available copies by 1.
-- Data is stored permanently in the database.
+Since the app expects input from the terminal, attach to the container like this:
+
+```bash
+docker attach library-app
+```
+
+You can now use the Java app interactively.
+
+> To safely detach from the container without stopping it, press:
+> `Ctrl + P`, then `Ctrl + Q`
+
+---
+
+## Access Adminer
+
+To explore or debug the database using a browser:
+
+- Open: [http://localhost:8080](http://localhost:8080)
+- Use the credentials in the .env file.
+
+---
+
+## Stop and Clean Up
+
+Stop and remove all containers and volumes:
+
+```bash
+docker-compose down
+```
+---
+
+## Database Initialization
+
+SQL scripts placed inside `db-init/` (e.g., `init.sql`) will be automatically executed when the DB container is created for the first time.
+This will crate the database schema and add a root admin user having the name "root admin".
+
+---
+
+## Notes
+
+- The Java app uses `stdin`, so it requires an attached terminal.
+- Adminer is provided for convenient database access.
