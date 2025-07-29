@@ -1,0 +1,31 @@
+version: "3"
+services:
+  library-app:
+    container_name: library-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: library-app
+    depends_on:
+      - db
+    env_file:
+      - .env
+    stdin_open: true
+    tty: true
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: admin123
+      MYSQL_DATABASE: library_db
+      MYSQL_USER: libraryuser
+      MYSQL_PASSWORD: libpass123lib
+    volumes:
+      - ./db-init:/docker-entrypoint-initdb.d
+      - db_data:/var/lib/mysql
+  adminer:
+    image: adminer
+    ports:
+      - 8080:8080
+
+volumes:
+  db_data:

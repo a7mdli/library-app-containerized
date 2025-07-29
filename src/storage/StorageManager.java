@@ -23,22 +23,38 @@ public class StorageManager {
         return storageManager;
     }
 
-    private StorageManager() {
-        Properties props = new Properties();
-        try (FileInputStream fis = new FileInputStream("src/storage/config.properties")) {
-            props.load(fis);
-            DB_URL = props.getProperty("db.url");
-            USER = props.getProperty("db.user");
-            PASSWORD = props.getProperty("db.password");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    private static Connection waitForConnection(String url, String user, String password) {
+        int retries = 30;
+        int delayMs = 2000;
 
-        try {
-            connection = DriverManager.getConnection(DB_URL, USER, PASSWORD);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        for (int i = 0; i < retries; i++) {
+            try {
+                Connection conn = DriverManager.getConnection(url, user, password);
+                System.out.println("Connected to DB");
+                return conn;
+            } catch (SQLException e) {
+                System.out.println("Waiting for DB... attempt " + (i + 1));
+                try {
+                    Thread.sleep(delayMs);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    throw new RuntimeException("Interrupted while waiting for DB", ie);
+                }
+            }
         }
+        throw new RuntimeException("Could not connect to DB after " + retries + " attempts");
+    }
+
+
+    private StorageManager() {
+        String host = System.getenv("DB_HOST");
+        String port = System.getenv("DB_PORT");
+        String dbName = System.getenv("DB_NAME");
+        DB_URL = "jdbc:mysql://"+host+":"+port+"/"+dbName;
+        USER = System.getenv("DB_USER");
+        PASSWORD = System.getenv("DB_PASSWORD");
+
+        connection = waitForConnection(DB_URL, USER, PASSWORD);
     }
 
     public void addUser(String id, String name, String role) {
